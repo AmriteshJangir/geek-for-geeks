@@ -1,0 +1,75 @@
+Question:
+
+Given an integer array arr[], the range of a subarray is defined as the difference between the largest and smallest elements within that subarray. Your task is to return the sum of the ranges of all possible subarrays in the array.
+Note: It is guaranteed that the result will fit within a 32-bit integer.
+Examples:
+Input: arr[] = [1, 2, 3]
+Output: 4
+Explanation: The 6 subarray of arr are the following :
+[1], range = largest - smallest = 1 - 1 = 0
+[2], range = largest - smallest = 2 - 2 = 0
+[3], range = largest - smallest = 3 - 3 = 0
+[1, 2], range = largest - smallest = 2 - 1 = 1
+[2, 3], range = largest - smallest = 3 - 2 = 1
+[1, 2, 3], range = largest - smallest = 3 - 1 = 2
+Sum of all ranges is 0 + 0 + 0 + 1 + 1 + 2 = 4
+Input: arr[] = [-32, 0, -2, 72]
+Output: 318
+Explanation: 
+[-32], range = largest - smallest = -32 - (-32) = 0
+[-32, 0], range = largest - smallest = 0 - (-32) = 32
+[-32, 0, -2], range = largest - smallest = 0 - (-32) = 32
+[-32, 0, -2, 72], range= largest - smallest = 72 - (-32) = 104
+[0], range = largest - smallest = 0 - 0 = 0
+[0, -2], range = largest - smallest = 0 - (-2) = 2
+[0, -2, 72], range = largest - smallest = 72 - (-2) = 74
+[-2], range = largest - smallest = -2 - (-2) = 0
+[-2, 72], range = largest - smallest = 72 - (-2) = 74
+[72], range = largest - smallest = 72 - 72 = 0
+Sum of all ranges is 0 + 32 + 32 + 104 + 0 + 2 + 74 + 0 + 74 + 0 = 318
+
+Solution:
+
+class Solution {
+  public:
+    int subarrayRanges(vector<int> &nums) {
+        // code here
+        int n = nums.size(), ans = 0;
+        
+        vector<int> nge(n, n), nse(n, n), pge(n, -1), pse(n, -1);
+        stack<int> s1, s2;
+        
+        for(int i = 0; i < n; i++) {
+            while(!s1.empty() && nums[s1.top()] > nums[i]) s1.pop();
+            if(!s1.empty()) pse[i] = s1.top();
+            s1.push(i);
+            
+            while(!s2.empty() && nums[s2.top()] < nums[i]) s2.pop();
+            if(!s2.empty()) pge[i] = s2.top();
+            s2.push(i);
+        }
+        
+        while(!s1.empty()) s1.pop();
+        while(!s2.empty()) s2.pop();
+        
+        for(int i = n - 1; i >= 0; i--) {
+            while(!s1.empty() && nums[s1.top()] >= nums[i]) s1.pop();
+            if(!s1.empty()) nse[i] = s1.top();
+            s1.push(i);
+            
+            while(!s2.empty() && nums[s2.top()] <= nums[i]) s2.pop();
+            if(!s2.empty()) nge[i] = s2.top();
+            s2.push(i);
+        }
+        
+        for(int i = 0; i < n; i++) {
+            // cout << pse[i] << " " << nse[i] << endl;
+            // cout << pge[i] << " " << nge[i] << endl;
+            // cout << "----------------" << endl;
+            ans += (nums[i] * ((nge[i] - i) * (i - pge[i])));
+            ans -= (nums[i] * ((nse[i] - i) * (i - pse[i])));
+        }
+        
+        return ans;
+    }
+};
