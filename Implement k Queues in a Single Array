@@ -1,0 +1,44 @@
+You are given two integers n and k. Your task is to implement a class kQueues that uses a single array of size n to simulate k independent queues.
+The class should support the following operations:
+enqueue(x, i) → Adds the element x into the i-th queue.
+dequeue(i) → Removes the front element from the i-th queue and returns it. Returns -1 if the queue is empty.
+isEmpty(i) → Returns true if i-th queue is empty, else return false.
+isFull() → Returns true if the array is completely full and no more elements can be inserted, otherwise false.
+There will be a sequence of q queries represented as:
+1 x i : Call enqueue(x, i)
+2 i : Call dequeue(i)
+3 i : Call isEmpty(i)
+4 : Call isFull()
+The driver code will process the queries, call the corresponding functions, and print the results of dequeue, isEmpty, and isFull operations.
+You only need to implement the above four functions.
+
+solution:
+class kQueues {
+    
+    int ctr, N;
+    vector<queue<int>> arr;
+
+  public:
+    kQueues(int n, int k) {
+        ctr=0;
+        N=n;
+        arr.resize(k);
+    }
+    void enqueue(int x, int i) {
+        arr[i].push(x);
+        ctr++;
+    }
+    int dequeue(int i) {
+        if (arr[i].empty()) return -1;
+        int res = arr[i].front();
+        arr[i].pop();
+        ctr--;
+        return res;
+    }
+    bool isEmpty(int i) {
+        return arr[i].empty();
+    }
+    bool isFull() {
+        return ctr==N;
+    }
+};
