@@ -1,0 +1,49 @@
+Given a garden with n flowers planted in a row, that is represented by an array arr[], where arr[i] denotes the height of the ith flower.You will water them for k days. In one day you can water w continuous flowers. Whenever you water a flower its height increases by 1 unit. You have to maximize the minimum height of all flowers after  k days of watering.
+Examples:
+Input: arr[] = [2, 3, 4, 5, 1], k = 2, w = 2
+Output: 2
+Explanation: The minimum height after watering is 2.
+Day 1: Water the last two flowers -> arr becomes [2, 3, 4, 6, 2]
+Day 2: Water the last two flowers -> arr becomes [2, 3, 4, 7, 3]
+Input: arr[] = [5, 8], k = 5, w = 1
+Output: 9
+Explanation: The minimum height after watering is 9.
+Day 1 - Day 4: Water the first flower -> arr becomes [9, 8]
+Day 5: Water the second flower -> arr becomes [9, 9]
+
+Solution:
+class Solution {
+  public:
+    int maxMinHeight(vector<int> &arr, int k, int w) {
+        // code here
+        int n = arr.size(), lo = 1e9;
+        for(auto &e: arr) lo = min(lo, e);
+        int hi = lo + k, res = -1;
+        auto check = [&](int minHeight) -> bool {
+            int reqk = 0;
+            vector<int>pre(n, 0);
+            for(int i=0; i<n; i++)
+            {
+                if(i) pre[i] += pre[i-1];
+                int curr = arr[i] + pre[i];
+                if(curr < minHeight)
+                {
+                    int extra = minHeight - curr;       
+                    pre[i] += extra; reqk += extra;
+                    if(i + w<= n-1) pre[i + w] -= extra;
+                }
+            }  
+            return reqk <= k;
+        };
+        while(lo <= hi)
+        {
+            int mid = lo + (hi - lo) / 2;
+            if(check(mid))
+            {
+                res = mid;
+                lo = mid + 1;
+            }else hi = mid - 1;
+        }
+        return res;
+    }
+};
